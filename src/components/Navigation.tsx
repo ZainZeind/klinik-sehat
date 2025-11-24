@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, FileText, Video, LayoutDashboard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Navigation = () => {
+  const navigate = useNavigate();
+  
   const navItems = [
     { name: "Dashboard", icon: LayoutDashboard },
     { name: "Antrian", icon: Users },
@@ -58,10 +61,17 @@ const Navigation = () => {
             transition={{ delay: 0.3 }}
             className="flex items-center space-x-3"
           >
-            <Button variant="ghost" className="hidden sm:inline-flex">
+            <Button 
+              variant="ghost" 
+              className="hidden sm:inline-flex"
+              onClick={() => navigate("/auth")}
+            >
               Masuk
             </Button>
-            <Button className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300">
+            <Button 
+              className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300"
+              onClick={() => navigate("/auth")}
+            >
               Daftar Sekarang
             </Button>
           </motion.div>
