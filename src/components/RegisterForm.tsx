@@ -4,8 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Eye, EyeOff, Lock, Mail, User, Phone, Calendar, MapPin, IdCard, Stethoscope, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff, Lock, Mail, User, Phone, Calendar, MapPin, IdCard, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 
 interface RegisterFormProps {
   onSubmit: (data: any) => Promise<void>;
@@ -21,14 +20,7 @@ const RegisterForm = ({ onSubmit, loading }: RegisterFormProps) => {
   const [address, setAddress] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
-  const [role, setRole] = useState<"pasien" | "dokter" | "admin">("pasien");
-  
-  // Pasien specific
   const [nik, setNik] = useState("");
-  
-  // Dokter specific
-  const [specialization, setSpecialization] = useState("");
-  const [sip, setSip] = useState("");
   
   // UI state
   const [showPassword, setShowPassword] = useState(false);
@@ -180,16 +172,14 @@ const RegisterForm = ({ onSubmit, loading }: RegisterFormProps) => {
     // Final validation
     validatePhone(phone);
     validatePassword(password);
-    if (role === "pasien") {
-      validateNIK(nik);
-    }
+    validateNIK(nik);
 
     // Check for errors
-    if (phoneError || passwordError || (role === "pasien" && nikError)) {
+    if (phoneError || passwordError || nikError) {
       return;
     }
 
-    const data: any = {
+    const data = {
       email,
       password,
       full_name: fullName,
@@ -197,17 +187,9 @@ const RegisterForm = ({ onSubmit, loading }: RegisterFormProps) => {
       address,
       date_of_birth: dateOfBirth,
       gender,
-      role
+      role: "pasien",
+      nik
     };
-
-    if (role === "pasien") {
-      data.nik = nik;
-    }
-
-    if (role === "dokter") {
-      data.specialization = specialization;
-      data.sip = sip;
-    }
 
     await onSubmit(data);
   };
@@ -223,38 +205,6 @@ const RegisterForm = ({ onSubmit, loading }: RegisterFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Role Selection - Full Width */}
-      <div className="space-y-2">
-        <Label htmlFor="role" className="text-foreground font-medium">
-          Daftar Sebagai <span className="text-red-500">*</span>
-        </Label>
-        <Select value={role} onValueChange={(value: any) => setRole(value)}>
-          <SelectTrigger className="bg-background/50 border-border focus:border-primary h-11">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pasien">
-              <div className="flex items-center">
-                <User className="w-4 h-4 mr-2" />
-                Pasien
-              </div>
-            </SelectItem>
-            <SelectItem value="dokter">
-              <div className="flex items-center">
-                <Stethoscope className="w-4 h-4 mr-2" />
-                Dokter
-              </div>
-            </SelectItem>
-            <SelectItem value="admin">
-              <div className="flex items-center">
-                <User className="w-4 h-4 mr-2" />
-                Admin
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       {/* 2-Column Layout for Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Full Name */}
@@ -276,97 +226,36 @@ const RegisterForm = ({ onSubmit, loading }: RegisterFormProps) => {
           </div>
         </div>
 
-        {/* NIK (only for pasien) */}
-        <AnimatePresence>
-          {role === "pasien" && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2 md:col-span-2"
-            >
-              <Label htmlFor="nik" className="text-foreground font-medium">
-                NIK <span className="text-red-500">*</span>
-              </Label>
-              <div className="relative">
-                <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="nik"
-                  type="text"
-                  placeholder="16 digit angka"
-                  value={nik}
-                  onChange={(e) => handleNIKChange(e.target.value)}
-                  className={`pl-9 pr-10 h-11 bg-background/50 border-border focus:border-primary ${
-                    nikError ? "border-red-500" : nik.length === 16 ? "border-green-500" : ""
-                  }`}
-                  required
-                  maxLength={16}
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <ValidationIcon isValid={!nikError && nik.length === 16} isTouched={nik.length > 0} />
-                </div>
-              </div>
-              {(nikError || (nik.length > 0 && nik.length < 16)) && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  {nikError ? <AlertCircle className="w-3 h-3 text-red-500" /> : null}
-                  {nikError || `${nik.length}/16 digit`}
-                </p>
-              )}
-            </motion.div>
+        {/* NIK (Pasien) */}
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="nik" className="text-foreground font-medium">
+            NIK (Nomor Induk Kependudukan) <span className="text-red-500">*</span>
+          </Label>
+          <div className="relative">
+            <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="nik"
+              type="text"
+              placeholder="16 digit angka"
+              value={nik}
+              onChange={(e) => handleNIKChange(e.target.value)}
+              className={`pl-9 pr-10 h-11 bg-background/50 border-border focus:border-primary ${
+                nikError ? "border-red-500" : nik.length === 16 ? "border-green-500" : ""
+              }`}
+              required
+              maxLength={16}
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <ValidationIcon isValid={!nikError && nik.length === 16} isTouched={nik.length > 0} />
+            </div>
+          </div>
+          {(nikError || (nik.length > 0 && nik.length < 16)) && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              {nikError ? <AlertCircle className="w-3 h-3 text-red-500" /> : null}
+              {nikError || `${nik.length}/16 digit`}
+            </p>
           )}
-        </AnimatePresence>
-
-        {/* Specialization & SIP (only for dokter) */}
-        <AnimatePresence>
-          {role === "dokter" && (
-            <>
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-2"
-              >
-                <Label htmlFor="specialization" className="text-foreground font-medium">
-                  Spesialisasi <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative">
-                  <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="specialization"
-                    type="text"
-                    placeholder="Contoh: Penyakit Dalam"
-                    value={specialization}
-                    onChange={(e) => setSpecialization(e.target.value)}
-                    className="pl-9 h-11 bg-background/50 border-border focus:border-primary"
-                    required
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-2"
-              >
-                <Label htmlFor="sip" className="text-foreground font-medium">
-                  Nomor SIP <span className="text-xs text-muted-foreground">(Opsional)</span>
-                </Label>
-                <div className="relative">
-                  <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="sip"
-                    type="text"
-                    placeholder="Contoh: SIP-001-2024"
-                    value={sip}
-                    onChange={(e) => setSip(e.target.value)}
-                    className="pl-9 h-11 bg-background/50 border-border focus:border-primary"
-                  />
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        </div>
 
         {/* Email */}
         <div className="space-y-2">
@@ -550,7 +439,7 @@ const RegisterForm = ({ onSubmit, loading }: RegisterFormProps) => {
       {/* Submit Button */}
       <Button
         type="submit"
-        disabled={loading || !!phoneError || !!passwordError || (role === "pasien" && !!nikError)}
+        disabled={loading || !!phoneError || !!passwordError || !!nikError}
         className="w-full bg-gradient-primary hover:shadow-glow-primary transition-all duration-300 h-11 font-medium mt-2"
       >
         {loading ? "Memproses..." : "Daftar Sekarang"}

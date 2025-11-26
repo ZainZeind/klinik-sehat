@@ -1,8 +1,9 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from './ui/button';
 import Logo from './Logo';
+import axios from 'axios';
 import {
   Calendar,
   ClipboardList,
@@ -19,6 +20,8 @@ import {
   Sun,
 } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
 interface DashboardLayoutProps {
   children: ReactNode;
 }
@@ -27,7 +30,29 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
-  const [unreadNotifications] = useState(3); // Simulated notification count
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      const response = await axios.get(`${API_URL}/auth/notifications`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUnreadNotifications(response.data.unreadCount || 0);
+    } catch (error) {
+      console.error('Fetch unread count error:', error);
+      // Don't show error to user, just fail silently
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -46,7 +71,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         { icon: ClipboardList, label: 'Kelola Antrian', path: '/dashboard/admin/queue' },
         { icon: Users, label: 'Kelola User', path: '/dashboard/admin/users' },
         { icon: FileText, label: 'Database Pasien', path: '/dashboard/admin/patients' },
-        { icon: Bell, label: 'Notifikasi', path: '/dashboard/admin/notifications' },
       ];
     } else if (user?.role === 'dokter') {
       return [

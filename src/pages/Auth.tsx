@@ -73,7 +73,7 @@ const Auth = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-2xl p-4 md:p-8"
+        className="relative z-10 w-full max-w-3xl p-4 md:p-8 my-8"
       >
         <div className="bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg border border-border p-6 md:p-8">
           {/* Logo */}
@@ -84,12 +84,12 @@ const Auth = () => {
           {/* Title */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-              {isLogin ? "Selamat Datang" : "Daftar Akun"}
+              {isLogin ? "Selamat Datang" : "Daftar Pasien Baru"}
             </h1>
             <p className="text-muted-foreground">
               {isLogin
                 ? "Masuk ke akun Klinik Sehat Anda"
-                : "Buat akun baru untuk memulai"}
+                : "Buat akun pasien untuk mendaftar dan konsultasi"}
             </p>
           </div>
 
@@ -152,9 +152,7 @@ const Auth = () => {
               </Button>
             </form>
           ) : (
-            <div className="max-h-[65vh] overflow-y-auto pr-1 -mr-1 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/30">
-              <RegisterForm onSubmit={handleRegister} loading={loading} />
-            </div>
+            <RegisterForm onSubmit={handleRegister} loading={loading} />
           )}
 
           {/* Toggle */}

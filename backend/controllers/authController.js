@@ -505,3 +505,111 @@ export const changePassword = async (req, res) => {
     res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
   }
 };
+
+// ==========================================
+// NOTIFICATIONS
+// ==========================================
+
+export const getMyNotifications = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const role = req.user.role;
+
+    let notifications = [];
+
+    if (role === 'pasien') {
+      // Get notifications for patient
+      const [results] = await pool.query(
+        `SELECT 
+          id_notifikasi,
+          judul_notifikasi,
+          isi_notifikasi,
+          jenis_notifikasi,
+          status_baca as status_dibaca,
+          waktu_kirim,
+          NULL as waktu_dibaca
+         FROM notifikasi
+         WHERE NIK_pasien = ?
+         ORDER BY waktu_kirim DESC
+         LIMIT 50`,
+        [userId]
+      );
+      notifications = results;
+    } else if (role === 'dokter') {
+      // For now, doctors and admins don't have notifications
+      // Future: add id_dokter column to notifikasi table
+      notifications = [];
+    } else if (role === 'admin') {
+      // For now, doctors and admins don't have notifications  
+      // Future: add id_admin column to notifikasi table
+      notifications = [];
+    }
+
+    // Count unread
+    const unreadCount = notifications.filter(n => n.status_dibaca === 'Belum Dibaca').length;
+
+    res.json({
+      notifications,
+      unreadCount
+    });
+  } catch (error) {
+    console.error('Get notifications error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
+  }
+};
+
+export const markNotificationAsRead = async (req, res) => {
+  try {
+    const { notificationId } = req.params;
+    const userId = req.user.id;
+    const role = req.user.role;
+
+    // Only pasien can mark notifications as read (for now)
+    if (role !== 'pasien') {
+      return res.status(403).json({ message: 'Fitur ini hanya untuk pasien' });
+    }
+
+    const [result] = await pool.query(
+      `UPDATE notifikasi 
+       SET status_baca = 'Sudah Dibaca' 
+       WHERE id_notifikasi = ? AND NIK_pasien = ?`,
+      [notificationId, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Notifikasi tidak ditemukan' });
+    }
+
+    res.json({ message: 'Notifikasi telah ditandai dibaca' });
+  } catch (error) {
+    console.error('Mark notification as read error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
+  }
+};
+
+export const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const role = req.user.role;
+
+    // Only pasien can mark notifications as read (for now)
+    if (role !== 'pasien') {
+      return res.status(403).json({ message: 'Fitur ini hanya untuk pasien' });
+    }
+
+    const [result] = await pool.query(
+      `UPDATE notifikasi 
+       SET status_baca = 'Sudah Dibaca' 
+       WHERE NIK_pasien = ? AND status_baca = 'Belum Dibaca'`,
+      [userId]
+    );
+
+    res.json({ 
+      message: 'Semua notifikasi telah ditandai dibaca',
+      markedCount: result.affectedRows
+    });
+  } catch (error) {
+    console.error('Mark all notifications as read error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
+  }
+};
