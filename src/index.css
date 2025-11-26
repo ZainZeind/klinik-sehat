@@ -8,49 +8,50 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 260 60% 8%;
-    --foreground: 280 20% 96%;
+    /* Klinik Sehat - Light & Fresh Theme */
+    --background: 0 0% 100%;
+    --foreground: 160 10% 15%;
 
-    --card: 260 50% 12%;
-    --card-foreground: 280 20% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 10% 15%;
 
-    --popover: 260 55% 10%;
-    --popover-foreground: 280 20% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 10% 15%;
 
-    --primary: 270 91% 65%;
-    --primary-foreground: 280 20% 96%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 260 40% 20%;
-    --secondary-foreground: 280 20% 96%;
+    --secondary: 160 20% 96%;
+    --secondary-foreground: 160 10% 15%;
 
-    --muted: 260 30% 18%;
-    --muted-foreground: 280 10% 65%;
+    --muted: 160 20% 96%;
+    --muted-foreground: 160 8% 46%;
 
-    --accent: 290 95% 70%;
-    --accent-foreground: 260 60% 8%;
+    --accent: 180 82% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 280 20% 96%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 260 30% 25%;
-    --input: 260 30% 25%;
-    --ring: 270 91% 65%;
+    --border: 160 20% 90%;
+    --input: 160 20% 90%;
+    --ring: 160 84% 39%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
     
-    /* Custom colors for clinic system */
-    --gradient-primary: linear-gradient(135deg, hsl(270, 91%, 65%), hsl(290, 95%, 70%));
-    --gradient-dark: linear-gradient(180deg, hsl(260, 60%, 8%), hsl(260, 50%, 12%));
-    --glow-primary: 0 0 40px hsl(270 91% 65% / 0.5);
-    --glow-accent: 0 0 60px hsl(290 95% 70% / 0.4);
-    --shadow-elevated: 0 20px 60px -10px hsl(270 91% 65% / 0.3);
+    /* Klinik Sehat Custom Colors */
+    --gradient-primary: linear-gradient(135deg, hsl(160, 84%, 39%), hsl(180, 82%, 45%));
+    --gradient-dark: linear-gradient(180deg, hsl(160, 20%, 98%), hsl(160, 25%, 96%));
+    --glow-primary: 0 8px 32px hsl(160 84% 39% / 0.2);
+    --glow-accent: 0 8px 32px hsl(180 82% 45% / 0.2);
+    --shadow-elevated: 0 12px 40px -8px hsl(160 50% 50% / 0.15);
     
-    /* Hero specific */
-    --hero-gradient: linear-gradient(135deg, hsl(260, 60%, 8%) 0%, hsl(270, 80%, 15%) 50%, hsl(290, 70%, 20%) 100%);
+    /* Hero specific - Fresh gradient */
+    --hero-gradient: linear-gradient(135deg, hsl(160, 25%, 98%) 0%, hsl(160, 40%, 96%) 50%, hsl(180, 30%, 97%) 100%);
     
-    /* Animation */
-    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Animation - Smooth & Natural */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.35, 0.265, 1.35);
 
     --sidebar-background: 0 0% 98%;
 
@@ -70,9 +71,34 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode uses same colors since we're dark by default */
-    --background: 260 60% 8%;
-    --foreground: 280 20% 96%;
+    /* Dark Mode for Klinik Sehat */
+    --background: 160 10% 8%;
+    --foreground: 160 5% 96%;
+
+    --card: 160 10% 12%;
+    --card-foreground: 160 5% 96%;
+
+    --popover: 160 10% 10%;
+    --popover-foreground: 160 5% 96%;
+
+    --primary: 160 84% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 160 10% 20%;
+    --secondary-foreground: 160 5% 96%;
+
+    --muted: 160 10% 18%;
+    --muted-foreground: 160 8% 60%;
+
+    --accent: 180 82% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 160 10% 25%;
+    --input: 160 10% 25%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(160, 84%, 45%), hsl(180, 82%, 50%));
+    --gradient-dark: linear-gradient(180deg, hsl(160, 10%, 8%), hsl(160, 10%, 12%));
+    --hero-gradient: linear-gradient(135deg, hsl(160, 10%, 8%) 0%, hsl(160, 15%, 12%) 50%, hsl(180, 10%, 15%) 100%);
   }
 }
 

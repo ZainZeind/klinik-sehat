@@ -1,9 +1,21 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Clock, Users, Shield } from "lucide-react";
-import heroImage from "@/assets/hero-clinic.jpg";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  const handleGetStarted = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-hero-gradient pt-20">
       {/* Animated background elements */}
@@ -49,8 +61,8 @@ const HeroSection = () => {
               transition={{ delay: 0.2 }}
               className="inline-block"
             >
-              <span className="px-4 py-2 bg-secondary/50 border border-primary/30 rounded-full text-sm text-primary font-medium backdrop-blur-sm">
-                🏥 Sistem Antrian Digital Modern
+              <span className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-sm text-emerald-600 dark:text-emerald-400 font-medium backdrop-blur-sm">
+                🏥 Klinik Sehat - Solusi Kesehatan Digital
               </span>
             </motion.div>
 
@@ -60,11 +72,11 @@ const HeroSection = () => {
               transition={{ delay: 0.3 }}
               className="text-5xl lg:text-7xl font-bold leading-tight"
             >
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-glow">
-                Kelola Antrian
+              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                Pelayanan Kesehatan
               </span>
               <br />
-              <span className="text-foreground">Klinik dengan Mudah</span>
+              <span className="text-foreground">Terpercaya & Modern</span>
             </motion.h1>
 
             <motion.p
@@ -73,8 +85,8 @@ const HeroSection = () => {
               transition={{ delay: 0.4 }}
               className="text-xl text-muted-foreground leading-relaxed"
             >
-              Platform terintegrasi untuk manajemen antrian, rekam medis digital, 
-              dan konsultasi online. Tingkatkan efisiensi klinik Anda hingga 300%.
+              Sistem antrian digital yang terintegrasi dengan rekam medis elektronik 
+              dan layanan konsultasi online. Nikmati pengalaman berobat yang lebih praktis dan efisien.
             </motion.p>
 
             <motion.div
@@ -85,17 +97,22 @@ const HeroSection = () => {
             >
               <Button
                 size="lg"
-                className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300 text-lg px-8 group"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 hover:shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 text-lg px-8 group"
+                onClick={handleGetStarted}
               >
-                Mulai Gratis
+                {isAuthenticated ? "Buka Dashboard" : "Daftar Sekarang"}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-primary/50 hover:bg-primary/10 text-lg px-8"
+                className="border-emerald-500/50 hover:bg-emerald-500/10 text-lg px-8"
+                onClick={() => {
+                  const featuresSection = document.getElementById('features');
+                  featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                Lihat Demo
+                Pelajari Lebih Lanjut
               </Button>
             </motion.div>
 
@@ -106,9 +123,9 @@ const HeroSection = () => {
               className="flex flex-wrap gap-6 pt-4"
             >
               {[
-                { icon: Clock, text: "Real-time Updates" },
-                { icon: Users, text: "Multi-user Access" },
-                { icon: Shield, text: "Secure & Private" },
+                { icon: Clock, text: "Antrian Real-time" },
+                { icon: Users, text: "Untuk Semua" },
+                { icon: Shield, text: "Aman & Terpercaya" },
               ].map((item, index) => (
                 <motion.div
                   key={index}
@@ -117,8 +134,8 @@ const HeroSection = () => {
                   transition={{ delay: 0.7 + index * 0.1 }}
                   className="flex items-center gap-2 text-muted-foreground"
                 >
-                  <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-                    <item.icon className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                    <item.icon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <span className="text-sm">{item.text}</span>
                 </motion.div>
@@ -138,27 +155,31 @@ const HeroSection = () => {
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-gradient-primary opacity-20 blur-3xl rounded-3xl" />
-              <img
-                src={heroImage}
-                alt="Klinik Queue System"
-                className="relative rounded-3xl shadow-elevated border border-primary/20"
-              />
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 blur-3xl rounded-3xl" />
+              <div className="relative rounded-3xl shadow-elevated border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 h-96 flex items-center justify-center backdrop-blur-sm">
+                <div className="text-center space-y-4">
+                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Users className="w-12 h-12 text-white" />
+                  </div>
+                  <p className="text-xl font-semibold">Klinik Sehat</p>
+                  <p className="text-muted-foreground">Sistem Antrian Digital</p>
+                </div>
+              </div>
               
               {/* Floating stats */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1 }}
-                className="absolute -bottom-6 -left-6 bg-card/90 backdrop-blur-xl p-6 rounded-2xl border border-border shadow-elevated"
+                className="absolute -bottom-6 -left-6 bg-card/90 backdrop-blur-xl p-6 rounded-2xl border border-emerald-500/20 shadow-lg shadow-emerald-500/10"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                    <Users className="w-6 h-6" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-primary">1,248</div>
-                    <div className="text-sm text-muted-foreground">Pasien Aktif</div>
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">2,500+</div>
+                    <div className="text-sm text-muted-foreground">Pasien Terlayani</div>
                   </div>
                 </div>
               </motion.div>
@@ -167,15 +188,15 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
-                className="absolute -top-6 -right-6 bg-card/90 backdrop-blur-xl p-6 rounded-2xl border border-border shadow-elevated"
+                className="absolute -top-6 -right-6 bg-card/90 backdrop-blur-xl p-6 rounded-2xl border border-emerald-500/20 shadow-lg shadow-emerald-500/10"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                    <Clock className="w-6 h-6" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-primary">-60%</div>
-                    <div className="text-sm text-muted-foreground">Waktu Tunggu</div>
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">&lt; 15 min</div>
+                    <div className="text-sm text-muted-foreground">Waktu Tunggu Rata-rata</div>
                   </div>
                 </div>
               </motion.div>

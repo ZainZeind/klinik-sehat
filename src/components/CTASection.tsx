@@ -1,8 +1,21 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CTASection = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  const handleGetStarted = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   const benefits = [
     "Setup dalam 5 menit",
     "Tidak perlu kartu kredit",
@@ -82,16 +95,18 @@ const CTASection = () => {
               <Button
                 size="lg"
                 className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300 text-lg px-8 group"
+                onClick={handleGetStarted}
               >
-                Mulai Uji Coba Gratis
+                {isAuthenticated ? "Buka Dashboard" : "Mulai Sekarang"}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="border-primary/50 hover:bg-primary/10 text-lg px-8"
+                onClick={() => navigate("/auth")}
               >
-                Hubungi Sales
+                Login
               </Button>
             </motion.div>
 

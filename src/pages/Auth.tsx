@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +16,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, register } = useAuth();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,34 +24,19 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        toast.success("Berhasil masuk!");
-        navigate("/");
+        await login(email, password);
+        navigate("/dashboard");
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        await register({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              full_name: fullName,
-            },
-          },
+          full_name: fullName,
+          role: 'pasien'
         });
-
-        if (error) throw error;
-
-        toast.success("Akun berhasil dibuat!");
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error: any) {
-      toast.error(error.message || "Terjadi kesalahan");
+      // Error already handled in AuthContext
     } finally {
       setLoading(false);
     }
@@ -60,8 +46,8 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
       <motion.div
@@ -70,22 +56,20 @@ const Auth = () => {
         transition={{ duration: 0.5 }}
         className="relative z-10 w-full max-w-md p-8"
       >
-        <div className="bg-card/80 backdrop-blur-xl rounded-2xl shadow-glow-subtle border border-border p-8">
+        <div className="bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg border border-border p-8">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow-primary">
-              <span className="text-3xl font-bold">K</span>
-            </div>
+            <Logo size="lg" showText={false} />
           </div>
 
           {/* Title */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
               {isLogin ? "Selamat Datang" : "Daftar Akun"}
             </h1>
             <p className="text-muted-foreground">
               {isLogin
-                ? "Masuk ke akun Klinik Queue Anda"
+                ? "Masuk ke akun Klinik Sehat Anda"
                 : "Buat akun baru untuk memulai"}
             </p>
           </div>

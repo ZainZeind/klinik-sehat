@@ -1,17 +1,28 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, FileText, Video, LayoutDashboard } from "lucide-react";
+import { Calendar, Users, FileText, Video, LayoutDashboard, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
+import Logo from "./Logo";
 
 const Navigation = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+  
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    element?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   
   const navItems = [
-    { name: "Dashboard", icon: LayoutDashboard },
-    { name: "Antrian", icon: Users },
-    { name: "Rekam Medis", icon: FileText },
-    { name: "Konsultasi", icon: Video },
-    { name: "Jadwal", icon: Calendar },
+    { name: "Fitur", icon: LayoutDashboard, action: () => scrollToSection('features') },
+    { name: "Role", icon: Users, action: () => scrollToSection('features') },
   ];
 
   return (
@@ -26,14 +37,10 @@ const Navigation = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="flex items-center space-x-2"
+            className="cursor-pointer"
+            onClick={() => navigate("/")}
           >
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-glow-primary">
-              <span className="text-2xl font-bold">K</span>
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Klinik Queue
-            </span>
+            <Logo size="md" />
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-1">
@@ -47,6 +54,7 @@ const Navigation = () => {
                 <Button
                   variant="ghost"
                   className="text-foreground hover:text-primary hover:bg-secondary/50 transition-all"
+                  onClick={item.action}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
                   {item.name}
@@ -61,19 +69,51 @@ const Navigation = () => {
             transition={{ delay: 0.3 }}
             className="flex items-center space-x-3"
           >
-            <Button 
-              variant="ghost" 
-              className="hidden sm:inline-flex"
-              onClick={() => navigate("/auth")}
-            >
-              Masuk
-            </Button>
-            <Button 
-              className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300"
-              onClick={() => navigate("/auth")}
-            >
-              Daftar Sekarang
-            </Button>
+            {isAuthenticated && user ? (
+              <>
+                <div className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-secondary/50 rounded-lg">
+                  <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+                    <span className="text-sm font-bold">{user.full_name?.charAt(0) || 'U'}</span>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium">{user.full_name}</p>
+                    <Badge variant="outline" className="text-xs">
+                      {user.role === 'admin' ? 'Admin' : user.role === 'dokter' ? 'Dokter' : 'Pasien'}
+                    </Badge>
+                  </div>
+                </div>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  Dashboard
+                </Button>
+                <Button 
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLogout}
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="hidden sm:inline-flex"
+                  onClick={() => navigate("/auth")}
+                >
+                  Masuk
+                </Button>
+                <Button 
+                  className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300"
+                  onClick={() => navigate("/auth")}
+                >
+                  Daftar Sekarang
+                </Button>
+              </>
+            )}
           </motion.div>
         </div>
       </div>
