@@ -70,39 +70,39 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar - Icon Only */}
-      <aside className="w-16 bg-card border-r border-border flex flex-col items-center">
-        <div className="p-2 border-b border-border w-full flex justify-center">
-          <Link to="/" title="Klinik Sehat">
-            <Logo size="sm" showText={false} />
+      {/* Sidebar */}
+      <aside className="w-56 bg-card border-r border-border flex flex-col">
+        <div className="p-3 border-b border-border">
+          <Link to="/">
+            <Logo size="sm" />
           </Link>
         </div>
 
-        <nav className="flex-1 py-2 w-full space-y-1">
+        <nav className="flex-1 p-3 space-y-1">
           {menuItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              title={item.label}
-              className="flex items-center justify-center p-2 mx-2 rounded-lg hover:bg-accent transition-colors group"
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors text-sm"
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className="w-4 h-4" />
+              <span>{item.label}</span>
             </Link>
           ))}
         </nav>
 
-        <div className="py-2 border-t border-border w-full space-y-2">
+        <div className="p-3 border-t border-border space-y-2">
           {/* Notification Button */}
           <Button
             variant="ghost"
             size="sm"
-            title="Notifikasi"
-            className="w-10 h-10 p-0 mx-auto relative hover:bg-accent"
+            className="w-full justify-start relative hover:bg-accent"
             onClick={() => navigate('/dashboard/notifications')}
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4 mr-2" />
+            Notifikasi
             {unreadNotifications > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              <span className="ml-auto w-5 h-5 bg-destructive text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
@@ -112,50 +112,46 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Button
             variant="ghost"
             size="sm"
-            title="Pengaturan"
-            className="w-10 h-10 p-0 mx-auto hover:bg-accent"
+            className="w-full justify-start hover:bg-accent"
             onClick={() => navigate('/dashboard/settings')}
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-4 h-4 mr-2" />
+            Pengaturan
           </Button>
 
           {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="sm"
-            title={darkMode ? "Mode Terang" : "Mode Gelap"}
-            className="w-10 h-10 p-0 mx-auto hover:bg-accent"
+            className="w-full justify-start hover:bg-accent"
             onClick={toggleDarkMode}
           >
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {darkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
+            {darkMode ? "Mode Terang" : "Mode Gelap"}
           </Button>
 
-          {/* Help Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            title="Bantuan"
-            className="w-10 h-10 p-0 mx-auto hover:bg-accent"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </Button>
-
-          {/* User Avatar */}
-          <div className="px-2 pt-2 border-t border-border">
-            <div className="w-10 h-10 mx-auto bg-gradient-primary rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:ring-2 hover:ring-primary transition-all" title={user?.full_name}>
-              {user?.full_name?.charAt(0) || 'U'}
+          {/* User Info */}
+          <div className="pt-2 border-t border-border">
+            <div className="flex items-center space-x-2 px-3 py-2 bg-accent/5 rounded-lg border border-accent/20">
+              <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                {user?.full_name?.charAt(0) || 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-foreground truncate">{user?.full_name}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              </div>
             </div>
           </div>
 
           {/* Logout Button */}
           <Button
             onClick={handleLogout}
-            variant="ghost"
+            variant="outline"
             size="sm"
-            title="Logout"
-            className="w-10 h-10 p-0 mx-auto hover:bg-destructive/10 hover:text-destructive transition-colors"
+            className="w-full justify-start hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
           </Button>
         </div>
       </aside>
