@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -68,7 +69,9 @@ const App = () => (
       path="/dashboard/admin/users"
       element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <UserManagement />
+          <ErrorBoundary>
+            <UserManagement />
+          </ErrorBoundary>
         </ProtectedRoute>
       }
     />

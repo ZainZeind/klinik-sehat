@@ -13,11 +13,13 @@ import { toast } from 'sonner';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 export default function UserManagement() {
+  console.log('🔍 UserManagement component rendering...');
+  
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
-  const [filterRole, setFilterRole] = useState<string>('');
+  const [filterRole, setFilterRole] = useState<string>('all');
 
   const [formData, setFormData] = useState({
     email: '',
@@ -31,23 +33,38 @@ export default function UserManagement() {
   });
 
   useEffect(() => {
+    console.log('🔄 useEffect triggered, loading users...');
     loadUsers();
   }, [filterRole]);
 
   const loadUsers = async () => {
     try {
-      console.log('Loading users with filter:', filterRole); // DEBUG
-      const response = await api.getAllUsers(filterRole);
-      console.log('Users response:', response); // DEBUG
-      setUsers(response.users || []);
-      if (response.users && response.users.length === 0) {
+      setLoading(true);
+      console.log('📡 Fetching users with filter:', filterRole);
+      
+      // Convert 'all' to empty string for API
+      const roleFilter = filterRole === 'all' ? '' : filterRole;
+      const response: any = await api.getAllUsers(roleFilter);
+      console.log('✅ Users response:', response);
+      
+      // Handle different response formats
+      const usersList = response?.users || response || [];
+      console.log('📊 Users list:', usersList);
+      
+      setUsers(Array.isArray(usersList) ? usersList : []);
+      
+      if (usersList.length === 0) {
+        console.log('⚠️ No users found');
         toast.info('Tidak ada data user');
+      } else {
+        console.log(`✅ Loaded ${usersList.length} users`);
       }
     } catch (error: any) {
-      console.error('Error loading users:', error); // DEBUG
-      toast.error(error.message || 'Gagal memuat data user');
-      setUsers([]); // Set empty array on error
+      console.error('❌ Error loading users:', error);
+      toast.error(error.message || 'Gagal memuat data user. Pastikan backend running.');
+      setUsers([]);
     } finally {
+      console.log('✅ Loading complete');
       setLoading(false);
     }
   };
@@ -124,18 +141,13 @@ export default function UserManagement() {
     );
   };
 
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
     <DashboardLayout>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+        </div>
+      ) : (
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -276,7 +288,7 @@ export default function UserManagement() {
                   <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Semua Role</SelectItem>
+                  <SelectItem value="all">Semua Role</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="dokter">Dokter</SelectItem>
                   <SelectItem value="pasien">Pasien</SelectItem>
@@ -348,14 +360,14 @@ export default function UserManagement() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
-                  {filterRole ? `Tidak ada user dengan role: ${filterRole}` : 'Belum ada user terdaftar'}
+                  {filterRole !== 'all' ? `Tidak ada user dengan role: ${filterRole}` : 'Belum ada user terdaftar'}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {filterRole 
+                  {filterRole !== 'all'
                     ? 'Coba ganti filter atau tambah user baru dengan role ini' 
                     : 'Mulai dengan menambahkan user baru ke sistem'}
                 </p>
-                {!filterRole && (
+                {filterRole === 'all' && (
                   <Button onClick={() => setDialogOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Tambah User Pertama
@@ -366,6 +378,7 @@ export default function UserManagement() {
           </CardContent>
         </Card>
       </div>
+      )}
     </DashboardLayout>
   );
 }
