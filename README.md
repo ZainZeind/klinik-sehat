@@ -395,6 +395,76 @@ Authorization: Bearer <token>
 
 ## 🔧 Troubleshooting
 
+### ❌ Tidak Bisa Login dengan Akun Dummy
+
+**Gejala:** Login dengan `admin@clinic.com` / `admin123` (atau akun dummy lainnya) gagal dengan error "Email atau password salah"
+
+**Penyebab & Solusi:**
+
+#### 1. Backend Belum Jalan
+```bash
+# Check apakah backend running
+lsof -i :5000
+
+# Jika tidak ada, start backend
+cd backend
+npm run dev
+
+# ✅ Harus muncul: "Server is running on port 5000"
+```
+
+#### 2. Database Belum Di-import
+```bash
+# Check apakah database exist
+mysql -u root -p -e "SHOW DATABASES LIKE 'clinic_queue_db';"
+
+# Jika tidak ada, import schema
+mysql -u root -p -e "CREATE DATABASE clinic_queue_db;"
+mysql -u root -p clinic_queue_db < backend/database/schema.sql
+
+# ✅ Harus muncul 3 users (admin, dokter, pasien)
+```
+
+#### 3. User Dummy Belum Ada di Database
+```bash
+cd backend
+
+# Test apakah users exist dan password cocok
+node scripts/test-login.js
+
+# Output harus:
+# ✅ Connected to database
+# Testing: admin@clinic.com
+#    Found: Administrator (admin)
+#    ✅ Password match! Login should work
+```
+
+**Jika password mismatch atau user not found:**
+```bash
+# Create users otomatis
+node scripts/create-users.js
+
+# ✅ Script akan create:
+# - admin@clinic.com / admin123
+# - dokter@clinic.com / dokter123
+# - pasien@clinic.com / pasien123
+```
+
+#### 4. Port Backend Salah
+```bash
+# Check backend/.env
+cat backend/.env
+
+# Harus ada:
+PORT=5000
+
+# Check frontend .env
+cat .env
+
+# Harus ada:
+VITE_API_URL=http://localhost:5000/api
+```
+
 ### "Failed to Fetch" atau "ERR_CONNECTION_REFUSED"
 
 **Penyebab:** Backend belum jalan atau port salah.
@@ -411,19 +481,34 @@ npm run dev
 # Pastikan output: "Server is running on port 5000"
 ```
 
-### Cannot Login / "Email atau password salah"
+### Quick Fix - One Command Solution
 
-**Penyebab:** Password hash tidak cocok atau database belum di-import.
-
-**Solusi:**
 ```bash
+# Stop semua, fresh start
 cd backend
 
-# Test password hash
-node scripts/test-login.js
+# 1. Drop & create database
+mysql -u root -p -e "DROP DATABASE IF EXISTS clinic_queue_db; CREATE DATABASE clinic_queue_db;"
 
-# Jika fail, create users ulang
-node scripts/create-users.js
+# 2. Import schema (sudah include 3 users)
+mysql -u root -p clinic_queue_db < database/schema.sql
+
+# 3. Verify users
+mysql -u root -p -e "SELECT email, role FROM clinic_queue_db.users;"
+
+# Output harus:
+# +----------------------+--------+
+# | email                | role   |
+# +----------------------+--------+
+# | admin@clinic.com     | admin  |
+# | dokter@clinic.com    | dokter |
+# | pasien@clinic.com    | pasien |
+# +----------------------+--------+
+
+# 4. Start backend
+npm run dev
+
+# ✅ Sekarang login harus work!
 ```
 
 ### Database Error / "Access Denied"
